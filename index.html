@@ -13,10 +13,37 @@
     <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease, color 0.3s ease; margin: 0; }
+        /* 100% Garanti Fallback CSS */
+        /* Eğer tarayıcıdaki eklentiler (Adblocker vb.) JIT Tailwind derleyicisini engellerse bu stiller devreye girer */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #050505; 
+            color: #f5f5f5; 
+            margin: 0; 
+            transition: background-color 0.3s ease, color 0.3s ease; 
+        }
+        body.light {
+            background-color: #f7f9fc !important;
+            color: #1e293b !important;
+        }
+        .fallback-bg { background-color: #050505; }
+        .light .fallback-bg { background-color: #ffffff !important; }
+        
+        .fallback-card {
+            background-color: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+        }
+        .light .fallback-card {
+            background-color: #ffffff !important;
+            border: 1px solid rgba(0, 0, 0, 0.05) !important;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05) !important;
+        }
+        
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #555; }
         .no-select { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
     </style>
@@ -40,7 +67,7 @@
         const { useState, useMemo, useEffect } = React;
         const { motion, AnimatePresence } = window.Motion;
 
-        // --- VERİLER (52 KURAL) ---
+        // --- VERİLER (52 KURAL - TAM VE EKSİKSİZ) ---
         const flightRules = [
           { id: 1, title: { tr: "THY ECO FLY (U/W/P/V/L/T)", en: "THY ECO FLY (U/W/P/V/L/T)" }, details: { tr: ["*Değişiklik yapılamaz.", "**İadeye izin verilmez.", "***Koltuk seçimi ücretli yapılabilir.", "***Yetişkin yolcu serbest bagaj hakkı 15KG şeklindedir."], en: ["*No changes allowed.", "**No refunds allowed.", "***Seat selection is available for a fee.", "***Adult passenger free baggage allowance is 15KG."] } },
           { id: 2, title: { tr: "THY ECO FLY (Q)", en: "THY ECO FLY (Q)" }, details: { tr: ["*Uçuşa 12 saat ve fazla zaman var ise değişiklikte yön başına 1100 TL cezalı işlem yapılır.", "*Uçuşa 1-12 saat kala değişiklikte yön başına 1350 TL cezalı işlem yapılır.", "*Uçuşa 1 saat kala değişikliğe izin vermez.", "** İadeye izin verilmez.", "***Koltuk seçimi ücretli yapılabilir.", "***Yetişkin yolcu serbest bagaj hakkı 15KG şeklindedir."], en: ["*If 12h+ before flight, 1100 TL penalty per direction for changes.", "*If 1-12h before flight, 1350 TL penalty per direction for changes.", "*No changes within 1h of flight.", "**No refunds allowed.", "***Seat selection for a fee.", "***Baggage allowance 15KG."] } },
@@ -96,7 +123,7 @@
           { id: 52, title: { tr: "PEGASUS DIŞ HAT (STANDART Y)", en: "PEGASUS INTERNATIONAL (STANDARD Y)" }, details: { tr: ["*Uçuşa 2 saat ve 2 saatten fazla süre kala değişiklikte 230 EUR işlem bedeli uygulanır.", "*Uçuşa 2 saatten az süre kala değişikliğe izin verilmez.", "**Uçuşa 12 saat ve 12 saatten fazla süre kala 265 EUR işlem bedeli ile iade yapılır."], en: ["*2h+ before: 230 EUR change penalty.", "*No changes within 2h.", "**12h+ before: 265 EUR refund penalty."] } }
         ];
 
-        // --- UYGULAMA ---
+        // --- UYGULAMA MOTORU ---
         function App() {
             const [searchTerm, setSearchTerm] = useState('');
             const [selectedRule, setSelectedRule] = useState(null);
@@ -115,9 +142,11 @@
                 const root = window.document.documentElement;
                 if (isDarkMode) {
                     root.classList.add('dark');
+                    document.body.classList.remove('light');
                     localStorage.setItem('theme', 'dark');
                 } else {
                     root.classList.remove('dark');
+                    document.body.classList.add('light');
                     localStorage.setItem('theme', 'light');
                 }
             }, [isDarkMode]);
@@ -183,35 +212,35 @@
 
             const getAirlineColor = (title) => {
                 const upper = title.toUpperCase();
-                if (upper.includes('THY')) return 'border-red-500/20 text-red-400 bg-red-500/5';
-                if (upper.includes('AJET')) return 'border-blue-500/20 text-blue-400 bg-blue-500/5';
-                if (upper.includes('PEGASUS')) return 'border-yellow-500/20 text-yellow-400 bg-yellow-500/5';
-                if (upper.includes('SUNEXPRESS')) return 'border-orange-500/20 text-orange-400 bg-orange-500/5';
-                return 'border-gray-500/20 text-gray-400 bg-gray-500/5';
+                if (upper.includes('THY')) return 'border-red-500/20 text-red-500 dark:text-red-400 bg-red-500/5';
+                if (upper.includes('AJET')) return 'border-blue-500/20 text-blue-500 dark:text-blue-400 bg-blue-500/5';
+                if (upper.includes('PEGASUS')) return 'border-yellow-500/20 text-yellow-600 dark:text-yellow-400 bg-yellow-500/5';
+                if (upper.includes('SUNEXPRESS')) return 'border-orange-500/20 text-orange-500 dark:text-orange-400 bg-orange-500/5';
+                return 'border-gray-500/20 text-gray-500 dark:text-gray-400 bg-gray-500/5';
             };
 
             return (
                 <div className="min-h-screen bg-white dark:bg-[#050505] text-[#1a1a1a] dark:text-[#f5f5f5] transition-colors duration-300">
-                    {/* HEADER - RESİMDEKİYLE BİREBİR */}
-                    <header className="sticky top-0 z-30 bg-white dark:bg-[#050505] border-b border-black/5 dark:border-white/5 px-4 py-4 md:px-8">
+                    {/* HEADER */}
+                    <header className="sticky top-0 z-30 bg-white/95 dark:bg-[#050505]/95 border-b border-black/5 dark:border-white/5 px-4 py-4 md:px-8 backdrop-blur-sm">
                         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
                             <div className="flex items-center gap-4">
                                 <div className="bg-blue-600 p-2.5 rounded-xl shadow-lg shadow-blue-600/20">
-                                    <i data-lucide="plane" className="w-7 h-7 text-white"></i>
+                                    <i data-lucide="plane" className="w-7 h-7 text-white animate-pulse"></i>
                                 </div>
                                 <div>
-                                    <h1 className="text-2xl font-extrabold tracking-tight leading-none">{t.title}</h1>
+                                    <h1 className="text-2xl font-extrabold tracking-tight leading-none text-gray-900 dark:text-white">{t.title}</h1>
                                     <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.15em] mt-1.5">{t.subtitle}</p>
                                 </div>
                             </div>
                             
                             <div className="flex items-center gap-3">
                                 <div className="relative hidden md:block">
-                                    <i data-lucide="search" className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+                                    <i data-lucide="search" className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
                                     <input
                                         type="text"
                                         placeholder={t.searchPlaceholder}
-                                        className="bg-gray-100 dark:bg-[#1a1f2e] border-none rounded-xl py-3 pl-11 pr-4 text-sm w-80 focus:ring-2 focus:ring-blue-500/20 outline-none dark:text-white placeholder:text-gray-500"
+                                        className="bg-gray-100 dark:bg-[#1a1f2e] border-none rounded-xl py-3 pl-11 pr-4 text-sm w-80 focus:ring-2 focus:ring-blue-500/20 focus:bg-gray-50 dark:focus:bg-[#252a3a] outline-none text-gray-900 dark:text-white placeholder:text-gray-500"
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                     />
@@ -220,7 +249,7 @@
                                     <i data-lucide="languages" className="w-4 h-4"></i>
                                     {lang}
                                 </button>
-                                <button onClick={() => setIsDarkMode(!isDarkMode)} className="bg-gray-100 dark:bg-[#1a1f2e] p-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#252b3d] transition-colors">
+                                <button onClick={() => setIsDarkMode(!isDarkMode)} className="bg-gray-100 dark:bg-[#1a1f2e] p-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#252b3d] transition-colors" aria-label="Tema Değiştir">
                                     {isDarkMode ? <i data-lucide="sun" className="w-5 h-5"></i> : <i data-lucide="moon" className="w-5 h-5"></i>}
                                 </button>
                             </div>
@@ -228,34 +257,46 @@
                     </header>
 
                     <main className="max-w-6xl mx-auto px-4 py-10 md:px-8">
-                        {/* 3'LÜ KART YAPISI - RESİMDEKİYLE BİREBİR */}
+                        {/* MOBİL İÇİN YEDEK ARAMA BARBARI */}
+                        <div className="relative block md:hidden mb-6">
+                            <i data-lucide="search" className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+                            <input
+                                type="text"
+                                placeholder={t.searchPlaceholder}
+                                className="w-full bg-gray-100 dark:bg-[#1a1f2e] border-none rounded-xl py-3 pl-11 pr-4 text-sm focus:ring-2 focus:ring-blue-500/20 focus:bg-gray-50 dark:focus:bg-[#252a3a] outline-none text-gray-900 dark:text-white placeholder:text-gray-500"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+
+                        {/* 3'LÜ KART YAPISI */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                            <div className="bg-gray-50 dark:bg-[#0f172a] p-8 rounded-[2rem] border border-black/5 dark:border-white/5 shadow-xl">
+                            <div className="fallback-card bg-gray-50 dark:bg-[#0f172a] p-8 rounded-[2rem] border border-black/5 dark:border-white/5 shadow-xl transition-all">
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="bg-green-500/10 p-2 rounded-lg">
                                         <i data-lucide="shield-check" className="w-6 h-6 text-green-500"></i>
                                     </div>
                                     <span className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">{t.card1Label}</span>
                                 </div>
-                                <p className="text-4xl font-light tracking-tight dark:text-white">{t.card1Value}</p>
+                                <p className="text-4xl font-light tracking-tight text-gray-900 dark:text-white">{t.card1Value}</p>
                             </div>
-                            <div className="bg-gray-50 dark:bg-[#0f172a] p-8 rounded-[2rem] border border-black/5 dark:border-white/5 shadow-xl">
+                            <div className="fallback-card bg-gray-50 dark:bg-[#0f172a] p-8 rounded-[2rem] border border-black/5 dark:border-white/5 shadow-xl transition-all">
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="bg-blue-500/10 p-2 rounded-lg">
                                         <i data-lucide="clock" className="w-6 h-6 text-blue-500"></i>
                                     </div>
                                     <span className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">{t.card2Label}</span>
                                 </div>
-                                <p className="text-4xl font-light tracking-tight dark:text-white">{t.card2Value}</p>
+                                <p className="text-4xl font-light tracking-tight text-gray-900 dark:text-white">{t.card2Value}</p>
                             </div>
-                            <div className="bg-gray-50 dark:bg-[#0f172a] p-8 rounded-[2rem] border border-black/5 dark:border-white/5 shadow-xl">
+                            <div className="fallback-card bg-gray-50 dark:bg-[#0f172a] p-8 rounded-[2rem] border border-black/5 dark:border-white/5 shadow-xl transition-all">
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="bg-purple-500/10 p-2 rounded-lg">
                                         <i data-lucide="credit-card" className="w-6 h-6 text-purple-500"></i>
                                     </div>
                                     <span className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">{t.card3Label}</span>
                                 </div>
-                                <p className="text-4xl font-light tracking-tight dark:text-white">{t.card3Value}</p>
+                                <p className="text-4xl font-light tracking-tight text-gray-900 dark:text-white">{t.card3Value}</p>
                             </div>
                         </div>
 
@@ -266,7 +307,7 @@
                                     key={rule.id}
                                     layoutId={`rule-${rule.id}`}
                                     onClick={() => setSelectedRule(rule)}
-                                    className="w-full bg-white dark:bg-[#0f172a] hover:bg-gray-50 dark:hover:bg-[#1a2233] border border-black/5 dark:border-white/5 rounded-2xl p-5 flex items-center justify-between transition-all cursor-pointer group shadow-sm"
+                                    className="w-full bg-white dark:bg-[#0f172a] hover:bg-gray-50 dark:hover:bg-[#1a2233] border border-black/5 dark:border-white/5 rounded-2xl p-5 flex items-center justify-between transition-all cursor-pointer group shadow-md"
                                 >
                                     <div className="flex items-center gap-5 flex-1 min-w-0">
                                         <div className={`w-14 h-14 rounded-xl border flex items-center justify-center font-black text-[11px] text-center px-1 leading-tight ${getAirlineColor(rule.title[lang])}`}>
@@ -277,7 +318,7 @@
                                                 <span className="text-[10px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-[0.2em]">#{rule.id}</span>
                                                 <span className="text-[10px] font-black text-blue-500 uppercase tracking-[0.2em]">{getAirlineName(rule.title[lang])}</span>
                                             </div>
-                                            <h3 className="font-semibold text-base md:text-lg truncate dark:text-gray-200">{rule.title[lang]}</h3>
+                                            <h3 className="font-semibold text-base md:text-lg truncate text-gray-800 dark:text-gray-200">{rule.title[lang]}</h3>
                                         </div>
                                     </div>
                                     <i data-lucide="chevron-right" className="w-6 h-6 text-gray-300 dark:text-gray-700 group-hover:text-blue-500 transition-all"></i>
@@ -302,7 +343,7 @@
                                                     <span className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">{t.ruleDetail}</span>
                                                     <span className="text-[10px] font-black text-blue-500 uppercase tracking-[0.2em]">#{selectedRule.id}</span>
                                                 </div>
-                                                <h2 className="text-2xl md:text-3xl font-bold leading-tight dark:text-white">{selectedRule.title[lang]}</h2>
+                                                <h2 className="text-2xl md:text-3xl font-bold leading-tight text-gray-900 dark:text-white">{selectedRule.title[lang]}</h2>
                                             </div>
                                         </div>
                                         <button onClick={() => setSelectedRule(null)} className="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors">
@@ -324,7 +365,7 @@
                                         <div className="flex flex-col md:flex-row gap-4">
                                             <button 
                                                 onClick={() => copyToClipboard(selectedRule.details[lang].join('\n'))}
-                                                className="flex-1 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 text-gray-800 dark:text-white px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-3"
+                                                className="flex-1 bg-gray-150 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 text-gray-850 dark:text-white px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-3 border border-black/5 dark:border-none"
                                             >
                                                 <i data-lucide={copied ? "check" : "copy"} className={`w-5 h-5 ${copied ? "text-green-500" : ""}`}></i>
                                                 {copied ? t.copied : t.copy}
@@ -340,7 +381,7 @@
                     </AnimatePresence>
 
                     <footer className="max-w-6xl mx-auto px-4 py-16 text-center border-t border-black/5 dark:border-white/5 mt-12">
-                        <p className="text-xs text-gray-400 dark:text-gray-600 font-black uppercase tracking-[0.3em]">{t.copyright}</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-650 font-black uppercase tracking-[0.3em]">{t.copyright}</p>
                     </footer>
                 </div>
             );
@@ -349,8 +390,16 @@
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
 
-        // Lucide ikonlarını render sonrası çalıştır
-        setTimeout(() => lucide.createIcons(), 500);
+        // Lucide ikonlarını initialize et
+        const initIcons = () => {
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        };
+        setTimeout(initIcons, 100);
+        setTimeout(initIcons, 300);
+        setTimeout(initIcons, 600);
+        setTimeout(initIcons, 1200);
     </script>
 </body>
 </html>
